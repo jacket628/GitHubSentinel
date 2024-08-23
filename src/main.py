@@ -14,6 +14,9 @@ from llm import LLM
 from subscription_manager import SubscriptionManager
 from command_handler import CommandHandler
 from logger import LOG
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def run_scheduler(scheduler):
     scheduler.start()

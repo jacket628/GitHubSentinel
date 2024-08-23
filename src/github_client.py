@@ -31,6 +31,8 @@ class GitHubClient:
         response.raise_for_status()  # 检查请求是否成功
         return response.json()  # 返回JSON格式的数据
 
+    # date range can refer to
+    # https://stackoverflow.com/questions/50745658/get-issues-on-a-date-range-from-github-enterprise-api
     def fetch_issues(self, repo, since=None, until=None):
         url = f'https://api.github.com/repos/{repo}/issues'  # 构建获取问题的API URL
         params = {
@@ -42,6 +44,9 @@ class GitHubClient:
         response.raise_for_status()
         return response.json()
 
+    #dage range is similar as above
+    #https://docs.github.com/en/rest/pulls/pulls?apiVersion=2022-11-28#list-pull-requests
+    #sort by created or updated, then filter in the returned results
     def fetch_pull_requests(self, repo, since=None, until=None):
         url = f'https://api.github.com/repos/{repo}/pulls'  # 构建获取拉取请求的API URL
         params = {
