@@ -2,6 +2,7 @@ import gradio as gr  # 导入gradio库用于创建GUI
 
 from config import Config  # 导入配置管理模块
 from github_client import GitHubClient  # 导入用于GitHub API操作的客户端
+from hackernews_client import HackerNewsClient  #导入用于HackerNews的客户端
 from report_generator import ReportGenerator  # 导入报告生成器模块
 from llm import LLM  # 导入可能用于处理语言模型的LLM类
 from subscription_manager import SubscriptionManager  # 导入订阅管理器
@@ -15,6 +16,7 @@ load_dotenv()
 # 创建各个组件的实例
 config = Config()
 github_client = GitHubClient(config.github_token)
+hacker_news_client = HackerNewsClient()
 llm = LLM()
 report_generator = ReportGenerator(llm)
 subscription_manager = SubscriptionManager(config.subscriptions_file)
@@ -43,6 +45,14 @@ def export_progress_by_date_range(repo, days):
 
     return report, report_file_path  # 返回报告内容和报告文件路径
 
+
+def export_hackernews_by_date_range(days):
+    # 定义一个函数，用于导出和生成指定时间范围内项目的进展报告
+    raw_file_path = hacker_news_client.export_progress_by_date_range(days)  # 导出原始数据文件路径
+    report, report_file_path = report_generator.generate_hackernews_report(raw_file_path)  # 生成并获取报告内容及文件路径
+    return report, report_file_path  # 返回报告内容和报告文件路径
+
+
 # 创建Gradio界面
 export_report = gr.Interface(
     fn=export_progress_by_date_range,  # 指定界面调用的函数
@@ -54,7 +64,7 @@ export_report = gr.Interface(
         gr.Slider(value=2, minimum=1, maximum=7, step=1, label="报告周期", info="生成项目过去一段时间进展，单位：天"),
         # 滑动条选择报告的时间范围
     ],
-    outputs=[gr.Markdown(), gr.File(label="下载报告")],  # 输出格式：Markdown文本和文件下载
+    outputs=[gr.Markdown(), gr.File(label="下载Github报告")],  # 输出格式：Markdown文本和文件下载
 )
 
 with gr.Blocks() as maintain_subscriptions:
@@ -63,12 +73,27 @@ with gr.Blocks() as maintain_subscriptions:
     delete_btn = gr.Button("Delete")
     action_label = gr.Textbox("Action Result")
     search_btn = gr.Button("Search")
-    pd_output = gr.Dataframe(headers=["Subscriptions",])
+    pd_output = gr.Dataframe(headers=["Subscriptions", ])
     add_btn.click(fn=add_subscription, inputs=name, outputs=action_label, api_name="add")
     delete_btn.click(fn=remove_subscription, inputs=name, outputs=action_label, api_name="remove")
     search_btn.click(fn=list_subscriptions, outputs=pd_output, api_name="search")
 
-demo = gr.TabbedInterface([export_report, maintain_subscriptions], ["Generate Report", "Maintain Subscriptions"])
+
+export_hacker_report = gr.Interface(
+        fn=export_hackernews_by_date_range,  # 指定界面调用的函数
+        title="HackerNewsSentinel",  # 设置界面标题
+        inputs=[
+            gr.Slider(value=2, minimum=1, maximum=7, step=1, label="报告周期", info="生成项目过去一段时间进展，单位：天"),
+            # 滑动条选择报告的时间范围
+        ],
+        outputs=[gr.Markdown(), gr.File(label="下载Hackernews报告")],  # 输出格式：Markdown文本和文件下载
+)
+
+demo = gr.TabbedInterface([export_report, maintain_subscriptions, export_hacker_report],
+                          ["Generate Report", "Maintain Subscriptions", "Generate HackerNews"])
+
+
+
 
 if __name__ == "__main__":
     demo.launch(share=True, server_name="0.0.0.0")  # 启动界面并设置为公共可访问
