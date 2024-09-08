@@ -50,20 +50,20 @@ class Kr36NewsClient:
                 link = f"https://36kr.com{link_tag['href']}" if link_tag else "无链接"
 
                 # 解析发布时间
-                # if "小时前" in publish_time:
-                #     # 如果是 X小时前的格式
-                #     hours_ago = int(publish_time.replace("小时前", "").strip())
-                #     publish_time_datetime = datetime.now() - timedelta(hours=hours_ago)
-                # elif "天前" in publish_time:
-                #     # 如果是 X天前的格式
-                #     days_ago = int(publish_time.replace("天前", "").strip())
-                #     publish_time_datetime = datetime.now() - timedelta(days=days_ago)
-                # else:
-                #     # 如果是其他日期格式，如 '2024-09-06'
-                #     try:
-                #         publish_time_datetime = datetime.strptime(publish_time, '%Y-%m-%d')
-                #     except ValueError:
-                #         publish_time_datetime = datetime.now()  # 默认当前时间
+                if "小时前" in publish_time:
+                    # 如果是 X小时前的格式
+                    hours_ago = int(publish_time.replace("小时前", "").strip())
+                    publish_time_datetime = datetime.now() - timedelta(hours=hours_ago)
+                elif "天前" in publish_time:
+                    # 如果是 X天前的格式
+                    days_ago = int(publish_time.replace("天前", "").strip())
+                    publish_time_datetime = datetime.now() - timedelta(days=days_ago)
+                else:
+                    # 如果是其他日期格式，如 '2024-09-06'
+                    try:
+                        publish_time_datetime = datetime.strptime(publish_time, '%Y-%m-%d')
+                    except ValueError:
+                        publish_time_datetime = datetime.now()  # 默认当前时间
 
                 # # 检查是否超过2天，如果超过则跳过
                 # if publish_time_datetime < two_days_ago:
@@ -73,7 +73,8 @@ class Kr36NewsClient:
                 markdown_content += f"## [{title}]({link})\n\n"
                 markdown_content += f"- **摘要**: {summary}\n"
                 markdown_content += f"- **来源**: {source}\n"
-                markdown_content += f"- **发布时间**: {publish_time}\n"
+                record_date = publish_time_datetime.strftime('%Y-%m-%d')
+                markdown_content += f"- **发布时间**: {record_date}\n"
                 markdown_content += f"- **详情页**: [点击查看]({link})\n\n"
 
             # 构建存储路径

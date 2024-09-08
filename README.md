@@ -96,6 +96,7 @@ pip install -r requirements.txt
     },
     "report_types": [
         "github",
+        "36kr_news_daily_report",
         "hacker_news_hours_topic",
         "hacker_news_daily_report"
     ],
@@ -106,12 +107,14 @@ pip install -r requirements.txt
 ```
 
 **出于安全考虑:** GitHub Token 和 Email Password 的设置均支持使用环境变量进行配置，以避免明文配置重要信息，如下所示：
-
+除了下面的export命令，你也可以保存这些键值对到src目录下的.env文件中。
 ```shell
 # Github
 export GITHUB_TOKEN="github_pat_xxx"
 # Email
 export EMAIL_PASSWORD="password"
+# openai key
+export OPENAI_API_KEY="your_key"
 ```
 
 
@@ -182,6 +185,9 @@ python src/gradio_server.py
 ![gradio_v0.8_github](images/gradio_v0.8_github.png)
 
 ![gradio_v0.8_hn](images/gradio_v0.8_hn.png)
+
+![gradio_v0.9_36kr](images/gradio_v0.9_36kr.png)
+
 
 - 这将在您的机器上启动一个 Web 服务器，允许您通过用户友好的界面管理订阅和生成报告。
 - 默认情况下，Gradio 服务器将可在 `http://localhost:7860` 访问，但如果需要，您可以公开共享它。

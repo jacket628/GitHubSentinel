@@ -94,6 +94,7 @@ Edit the `config.json` file to set up your GitHub Token, Email settings (using T
     },
     "report_types": [
         "github",
+        "36kr_news_daily_report",
         "hacker_news_hours_topic",
         "hacker_news_daily_report"
     ],
@@ -104,12 +105,14 @@ Edit the `config.json` file to set up your GitHub Token, Email settings (using T
 ```
 
 **For security reasons:** The GitHub Token and Email Password settings support using environment variables to avoid configuring sensitive information in plain text, as shown below:
-
+Besides the export command below, you can also save these kv pairs in .env file, under directory src/.
 ```shell
 # Github
 export GITHUB_TOKEN="github_pat_xxx"
 # Email
 export EMAIL_PASSWORD="password"
+# openai key
+export OPENAI_API_KEY="your_key"
 ```
 
 ### 3. How to Run
@@ -179,6 +182,8 @@ python src/gradio_server.py
 ![gradio_v0.8_github](images/gradio_v0.8_github.png)
 
 ![gradio_v0.8_hn](images/gradio_v0.8_hn.png)
+
+![gradio_v0.9_36kr](images/gradio_v0.9_36kr.png)
 
 
 - This will start a web server on your machine, allowing you to manage subscriptions and generate reports through a user-friendly interface.

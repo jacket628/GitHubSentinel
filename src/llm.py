@@ -97,6 +97,7 @@ class LLM:
             LOG.error(f"生成报告时发生错误：{e}")
             raise
 
+
 if __name__ == '__main__':
     from config import Config  # 导入配置管理类
     config = Config()

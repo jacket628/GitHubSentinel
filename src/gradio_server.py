@@ -65,27 +65,29 @@ def update_model_list(model_type):
         return gr.Dropdown(choices=["llama3.1", "gemma2:2b", "qwen2:7b"], label="选择模型")
 
 
-# def generate_36kr_daily_topic(model_type, model_name):
-#     LOG.info("开始生成36kr报告")
-#     config.llm_model_type = model_type
-#
-#     if model_type == "openai":
-#         config.openai_model_name = model_name
-#     else:
-#         config.ollama_model_name = model_name
-#
-#     llm = LLM(config)  # 创建语言模型实例
-#     LOG.info("[开始36r报告]36kr News 今日AI技术趋势")
-#     # 获取当前的36kr AI新闻
-#     kr36_news_client.export_top_articles()
-#     # 获取当前日期，并格式化为 'YYYY-MM-DD' 格式
-#     date = datetime.now().strftime('%Y-%m-%d')
-#     # 生成每日汇总报告的目录路径
-#     directory_path = "36kr_news"
-#     # 生成每日汇总报告并保存
-#     report_generator = ReportGenerator(llm, config.report_types)
-#     report, _ = report_generator.generate_36kr_daily_report(directory_path)
-#     LOG.info(f"[结束36r报告]")
+def generate_36kr_daily_topic(model_type, model_name):
+    LOG.info("开始生成36kr报告")
+    config.llm_model_type = model_type
+
+    if model_type == "openai":
+        config.openai_model_name = model_name
+    else:
+        config.ollama_model_name = model_name
+
+    llm = LLM(config)  # 创建语言模型实例
+    LOG.info("[开始36r报告]36kr News 今日AI技术趋势")
+    # 获取当前的36kr AI新闻
+    kr36_news_client.export_top_articles()
+    # 获取当前日期，并格式化为 'YYYY-MM-DD' 格式
+    date = datetime.now().strftime('%Y-%m-%d')
+    # 生成每日汇总报告的目录路径
+    directory_path = "36kr_news"
+    # 生成每日汇总报告并保存
+    report_generator = ReportGenerator(llm, config.report_types)
+    report, report_file_path = report_generator.generate_36kr_daily_report(directory_path)
+    LOG.info(f"[结束36r报告]")
+    return report, report_file_path  # 返回报告内容和报告文件路径
+
 
 # 创建 Gradio 界面
 with gr.Blocks(title="GitHubSentinel") as demo:
@@ -149,30 +151,30 @@ with gr.Blocks(title="GitHubSentinel") as demo:
         button.click(generate_hn_hour_topic, inputs=[model_type, model_name, ], outputs=[markdown_output, file_output])
 
     # 创建 Hacker News 热点话题 Tab
-    # with gr.Tab("36kr AI新闻"):
-    #     gr.Markdown("## 36kr AI新闻")  # 添加小标题
-    #
-    #     # 创建 Radio 组件
-    #     model_type = gr.Radio(["openai", "ollama"], label="模型类型",
-    #                           info="使用 OpenAI GPT API 或 Ollama 私有化模型服务", value="openai")
-    #
-    #     # 创建 Dropdown 组件
-    #     model_name = gr.Dropdown(choices=["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"], label="选择模型",
-    #                              value="gpt-4o-mini")
-    #
-    #     # 使用 radio 组件的值来更新 dropdown 组件的选项
-    #     model_type.change(fn=update_model_list, inputs=model_type, outputs=model_name)
-    #
-    #     # 创建按钮来生成报告
-    #     button = gr.Button("生成最新AI新闻")
-    #
-    #     # 设置输出组件
-    #     markdown_output = gr.Markdown()
-    #     file_output = gr.File(label="下载报告")
-    #
-    #     # 将按钮点击事件与导出函数绑定
-    #     button.click(generate_36kr_daily_topic, inputs=[model_type, model_name, ],
-    #                  outputs=[markdown_output, file_output])
+    with gr.Tab("36kr AI新闻"):
+        gr.Markdown("## 36kr AI新闻")  # 添加小标题
+
+        # 创建 Radio 组件
+        model_type = gr.Radio(["openai", "ollama"], label="模型类型",
+                              info="使用 OpenAI GPT API 或 Ollama 私有化模型服务", value="openai")
+
+        # 创建 Dropdown 组件
+        model_name = gr.Dropdown(choices=["gpt-4o", "gpt-4o-mini", "gpt-3.5-turbo"], label="选择模型",
+                                 value="gpt-4o-mini")
+
+        # 使用 radio 组件的值来更新 dropdown 组件的选项
+        model_type.change(fn=update_model_list, inputs=model_type, outputs=model_name)
+
+        # 创建按钮来生成报告
+        button = gr.Button("生成最新36氪AI报告")
+
+        # 设置输出组件
+        markdown_output = gr.Markdown()
+        file_output = gr.File(label="下载报告")
+
+        # 将按钮点击事件与导出函数绑定
+        button.click(generate_36kr_daily_topic, inputs=[model_type, model_name, ],
+                     outputs=[markdown_output, file_output])
 
 if __name__ == "__main__":
     demo.launch(share=True, server_name="0.0.0.0")  # 启动界面并设置为公共可访问
