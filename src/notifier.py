@@ -4,6 +4,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from logger import LOG
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 class Notifier:
     def __init__(self, email_settings):
         self.email_settings = email_settings
@@ -31,7 +35,19 @@ class Notifier:
             self.send_email(subject, report)
         else:
             LOG.warning("邮件设置未配置正确，无法发送 Hacker News 报告通知")
-    
+
+    def notify_36kr_report(self, date, report):
+        """
+        发送 Hacker News 每日技术趋势报告邮件
+        :param date: 报告日期
+        :param report: 报告内容
+        """
+        if self.email_settings:
+            subject = f"[36kr] {date} AI新闻"
+            self.send_email(subject, report)
+        else:
+            LOG.warning("邮件设置未配置正确，无法发送 36kr AI新闻")
+
     def send_email(self, subject, report):
         LOG.info(f"准备发送邮件:{subject}")
         msg = MIMEMultipart()

@@ -1,5 +1,6 @@
 import os
 from logger import LOG  # 导入日志模块
+from datetime import datetime, timedelta  # 导入datetime模块用于获取日期和时间
 
 class ReportGenerator:
     def __init__(self, llm, report_types):
@@ -87,6 +88,38 @@ class ReportGenerator:
                 with open(os.path.join(directory_path, filename), 'r') as file:
                     markdown_content += file.read() + "\n"
         return markdown_content
+
+    def _aggregate_36kr_reports(self, directory_path, today_date):
+        markdown_content = ""
+        filename = f'36kr_news_{today_date}.md'
+        with open(os.path.join(directory_path, filename), 'r', encoding='utf-8') as file:
+            markdown_content += file.read() + "\n"
+
+        return markdown_content
+
+    def generate_36kr_daily_report(self, directory_path):
+        """
+        生成 36kr AI News 每日汇总的报告，并保存到 kr36_news/tech_trends/ 目录下。
+        这里的输入是一个目录路径，其中包含所有由 generate_36kr_daily_report 生成的 *_topic.md 文件。
+        """
+        # 获取今天的日期并格式化
+        today_date = datetime.now().strftime("%Y%m%d")
+        markdown_content = self._aggregate_36kr_reports(directory_path, today_date)
+        system_prompt = self.prompts.get("36kr_news_daily_report")
+
+        base_name = os.path.basename(directory_path.rstrip('/'))
+        report_file_path = os.path.join("36kr_news/tech_trends/", f"{base_name}_trends_{today_date}.md")
+
+        # 确保 tech_trends 目录存在
+        os.makedirs(os.path.dirname(report_file_path), exist_ok=True)
+
+        report = self.llm.generate_report(system_prompt, markdown_content)
+
+        with open(report_file_path, 'w+', encoding='utf-8') as report_file:
+            report_file.write(report)
+
+        LOG.info(f"Hacker News 每日汇总报告已保存到 {report_file_path}")
+        return report, report_file_path
 
 
 if __name__ == '__main__':

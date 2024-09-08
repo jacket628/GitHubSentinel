@@ -9,7 +9,7 @@ class Kr36NewsClient:
         self.url = 'https://36kr.com/information/AI/'  # 36kr的URL
 
     def export_top_articles(self):
-        LOG.debug("准备获取Hacker News的热门新闻。")
+        LOG.debug("准备获取36kr AI的热门新闻。")
         try:
             # 获取今天的日期并格式化
             today_date = datetime.now().strftime("%Y%m%d")
@@ -77,9 +77,9 @@ class Kr36NewsClient:
                 markdown_content += f"- **详情页**: [点击查看]({link})\n\n"
 
             # 构建存储路径
-            dir_path = 'kr36_news'
+            dir_path = '36kr_news'
             os.makedirs(dir_path, exist_ok=True)  # 确保目录存在
-            file_path = os.path.join(dir_path, f'{today_date}.md')  # 定义文件路径
+            file_path = os.path.join(dir_path, f'{dir_path}_{today_date}.md')  # 定义文件路径
 
             # 导出Markdown文件
             with open(file_path, 'w', encoding='utf-8') as file:

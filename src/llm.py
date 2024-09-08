@@ -2,6 +2,9 @@ import json
 import requests
 from openai import OpenAI  # 导入OpenAI库用于访问GPT模型
 from logger import LOG  # 导入日志模块
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class LLM:
     def __init__(self, config):
