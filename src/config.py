@@ -27,7 +27,7 @@ class Config:
             self.ollama_api_url = llm_config.get('ollama_api_url', 'http://localhost:11434/api/chat')
             
             # 加载报告类型配置
-            self.report_types = config.get('report_types', ["github", "hacker_news"])  # 默认报告类型
+            self.report_types = config.get('report_types', ["github", "hacker_news", "36kr"])  # 默认报告类型
             
             # 加载 Slack 配置
             slack_config = config.get('slack', {})
